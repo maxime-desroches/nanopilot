@@ -11,6 +11,7 @@ from openpilot.selfdrive.car.fw_versions import get_fw_versions_ordered, get_pre
 from openpilot.selfdrive.car.mock.values import CAR as MOCK
 from openpilot.common.swaglog import cloudlog
 import cereal.messaging as messaging
+from openpilot.selfdrive.car.values import Platform
 from openpilot.selfdrive.car import gen_empty_fingerprint
 from openpilot.system.version import get_build_metadata
 
@@ -51,15 +52,16 @@ def load_interfaces(brand_names):
     CarState = __import__(path + '.carstate', fromlist=['CarState']).CarState
     CarController = __import__(path + '.carcontroller', fromlist=['CarController']).CarController
     for model_name in brand_names[brand_name]:
+      print(model_name)
       ret[model_name] = (CarInterface, CarController, CarState)
   return ret
 
 
-def _get_interface_names() -> dict[str, list[str]]:
+def _get_interface_names() -> dict[str, list[Platform]]:
   # returns a dict of brand name and its respective models
   brand_names = {}
   for brand_name, brand_models in get_interface_attr("CAR").items():
-    brand_names[brand_name] = [model.value for model in brand_models]
+    brand_names[brand_name] = list(brand_models)
 
   return brand_names
 

@@ -111,14 +111,14 @@ class CarInterfaceBase(ABC):
     ret = CarInterfaceBase.get_std_params(candidate)
 
     platform = PLATFORMS[candidate]
-    ret.mass = platform.config.specs.mass
-    ret.wheelbase = platform.config.specs.wheelbase
-    ret.steerRatio = platform.config.specs.steerRatio
-    ret.centerToFront = ret.wheelbase * platform.config.specs.centerToFrontRatio
-    ret.minEnableSpeed = platform.config.specs.minEnableSpeed
-    ret.minSteerSpeed = platform.config.specs.minSteerSpeed
-    ret.tireStiffnessFactor = platform.config.specs.tireStiffnessFactor
-    ret.flags |= int(platform.config.flags)
+    ret.mass = platform.value.specs.mass
+    ret.wheelbase = platform.value.specs.wheelbase
+    ret.steerRatio = platform.value.specs.steerRatio
+    ret.centerToFront = ret.wheelbase * platform.value.specs.centerToFrontRatio
+    ret.minEnableSpeed = platform.value.specs.minEnableSpeed
+    ret.minSteerSpeed = platform.value.specs.minSteerSpeed
+    ret.tireStiffnessFactor = platform.value.specs.tireStiffnessFactor
+    ret.flags |= int(platform.value.flags)
 
     ret = cls._get_params(ret, candidate, fingerprint, car_fw, experimental_long, docs)
 
