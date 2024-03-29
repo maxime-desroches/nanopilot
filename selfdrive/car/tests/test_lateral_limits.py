@@ -31,7 +31,7 @@ ABOVE_LIMITS_CARS = [
 car_model_jerks: defaultdict[str, dict[str, float]] = defaultdict(dict)
 
 
-@parameterized_class('car_model', [(c,) for c in sorted(CAR_MODELS)])
+@parameterized_class('car_model', [(c.name,) for c in sorted(CAR_MODELS)])
 class TestLateralLimits(unittest.TestCase):
   car_model: str
 
