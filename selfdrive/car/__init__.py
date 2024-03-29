@@ -267,12 +267,15 @@ class Platforms(Enum):
   #   return member
 
   def __hash__(self) -> int:
-    print('getting hash for', self.name, hash(self.name))
+    # print('getting hash for', self.name, hash(self.name))
     return hash(self.name)
 
   def __eq__(self, other):
     other_name = other.name if isinstance(other, Platforms) else other
     return self.name == other_name
+
+  def __repr__(self):
+    return f"<{self.__class__.__name__}.{self.name}: PlatformConfig(...)>"
 
   @classmethod
   def create_dbc_map(cls) -> dict[str, DbcDict]:
