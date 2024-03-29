@@ -1,7 +1,7 @@
 # functions common among cars
 from collections import defaultdict, namedtuple
 from dataclasses import dataclass
-from enum import IntFlag, Enum, ReprEnum, EnumType
+from enum import IntFlag, Enum
 from dataclasses import replace
 
 import capnp
@@ -248,24 +248,7 @@ class PlatformConfig(Freezable):
     self.init()
 
 
-# class PlatformsType(EnumType):
-#   def __new__(metacls, cls, bases, classdict, *, boundary=None, _simple=False, **kwds):
-#     for key in classdict._member_names.keys():
-#       cfg: PlatformConfig = classdict[key]
-#       cfg.platform_str = key
-#       cfg.freeze()
-#     return super().__new__(metacls, cls, bases, classdict, boundary=boundary, _simple=_simple, **kwds)
-
-
 class Platforms(Enum):
-  # config: PlatformConfig
-
-  # def __new__(cls, platform_config: PlatformConfig):
-  #   member = str.__new__(cls, platform_config.platform_str)
-  #   member.config = platform_config
-  #   member._value_ = platform_config.platform_str
-  #   return member
-
   def __hash__(self) -> int:
     # print('getting hash for', self.name, hash(self.name))
     return hash(self.name)
@@ -276,6 +259,14 @@ class Platforms(Enum):
 
   def __ne__(self, other):
     return not self.__eq__(other)
+
+  def __lt__(self, other):
+    if isinstance(other, Platforms):
+      return self.name < other.name
+    return self.name < other
+
+  # def __str__(self):
+  #   return self.name
 
   def __repr__(self):
     return f"{self.__class__.__name__}.{self.name}"
