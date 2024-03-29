@@ -274,6 +274,9 @@ class Platforms(Enum):
     other_name = other.name if isinstance(other, Platforms) else other
     return self.name == other_name
 
+  def __ne__(self, other):
+    return not self.__eq__(other)
+
   def __repr__(self):
     return f"{self.__class__.__name__}.{self.name}"
 
