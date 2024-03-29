@@ -275,7 +275,7 @@ class Platforms(Enum):
     return self.name == other_name
 
   def __repr__(self):
-    return f"<{self.__class__.__name__}.{self.name}: PlatformConfig(...)>"
+    return f"{self.__class__.__name__}.{self.name}"
 
   @classmethod
   def create_dbc_map(cls) -> dict[str, DbcDict]:
