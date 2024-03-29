@@ -29,9 +29,11 @@ def get_all_car_docs() -> list[CarDocs]:
   all_car_docs: list[CarDocs] = []
   footnotes = get_all_footnotes()
   for model, platform in PLATFORMS.items():
-    car_docs = platform.config.car_docs
+    car_docs = platform.value.car_docs
     # If available, uses experimental longitudinal limits for the docs
-    CP = interfaces[model][0].get_params(platform, fingerprint=gen_empty_fingerprint(),
+    # print(interfaces)
+    # we were giving an enum before which was implicitly handled as a string later! this is a fix
+    CP = interfaces[model][0].get_params(platform.name, fingerprint=gen_empty_fingerprint(),
                                          car_fw=[car.CarParams.CarFw(ecu="unknown")], experimental_long=True, docs=True)
 
     if CP.dashcamOnly or not len(car_docs):

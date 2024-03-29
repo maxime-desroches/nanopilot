@@ -1,7 +1,7 @@
 # functions common among cars
 from collections import defaultdict, namedtuple
 from dataclasses import dataclass
-from enum import IntFlag, ReprEnum, EnumType
+from enum import IntFlag, Enum, ReprEnum, EnumType
 from dataclasses import replace
 
 import capnp
@@ -233,10 +233,10 @@ class PlatformConfig(Freezable):
 
   flags: int = 0
 
-  platform_str: str | None = None
+  # platform_str: str | None = None
 
-  def __hash__(self) -> int:
-    return hash(self.platform_str)
+  # def __hash__(self) -> int:
+  #   return hash(self.platform_str)
 
   def override(self, **kwargs):
     return replace(self, **kwargs)
@@ -248,42 +248,50 @@ class PlatformConfig(Freezable):
     self.init()
 
 
-class PlatformsType(EnumType):
-  def __new__(metacls, cls, bases, classdict, *, boundary=None, _simple=False, **kwds):
-    for key in classdict._member_names.keys():
-      cfg: PlatformConfig = classdict[key]
-      cfg.platform_str = key
-      cfg.freeze()
-    return super().__new__(metacls, cls, bases, classdict, boundary=boundary, _simple=_simple, **kwds)
+# class PlatformsType(EnumType):
+#   def __new__(metacls, cls, bases, classdict, *, boundary=None, _simple=False, **kwds):
+#     for key in classdict._member_names.keys():
+#       cfg: PlatformConfig = classdict[key]
+#       cfg.platform_str = key
+#       cfg.freeze()
+#     return super().__new__(metacls, cls, bases, classdict, boundary=boundary, _simple=_simple, **kwds)
 
 
-class Platforms(str, ReprEnum, metaclass=PlatformsType):
-  config: PlatformConfig
+class Platforms(Enum):
+  # config: PlatformConfig
 
-  def __new__(cls, platform_config: PlatformConfig):
-    member = str.__new__(cls, platform_config.platform_str)
-    member.config = platform_config
-    member._value_ = platform_config.platform_str
-    return member
+  # def __new__(cls, platform_config: PlatformConfig):
+  #   member = str.__new__(cls, platform_config.platform_str)
+  #   member.config = platform_config
+  #   member._value_ = platform_config.platform_str
+  #   return member
+
+  def __hash__(self) -> int:
+    print('getting hash for', self.name, hash(self.name))
+    return hash(self.name)
+
+  def __eq__(self, other):
+    other_name = other.name if isinstance(other, Platforms) else other
+    return self.name == other_name
 
   @classmethod
   def create_dbc_map(cls) -> dict[str, DbcDict]:
-    return {p: p.config.dbc_dict for p in cls}
+    return {p.name: p.value.dbc_dict for p in cls}
 
   @classmethod
   def with_flags(cls, flags: IntFlag) -> set['Platforms']:
-    return {p for p in cls if p.config.flags & flags}
+    return {p for p in cls if p.value.flags & flags}
 
   @classmethod
   def without_flags(cls, flags: IntFlag) -> set['Platforms']:
-    return {p for p in cls if not (p.config.flags & flags)}
+    return {p for p in cls if not (p.value.flags & flags)}
 
   @classmethod
   def print_debug(cls, flags):
     platforms_with_flag = defaultdict(list)
     for flag in flags:
       for platform in cls:
-        if platform.config.flags & flag:
+        if platform.value.flags & flag:
           assert flag.name is not None
           platforms_with_flag[flag.name].append(platform)
 

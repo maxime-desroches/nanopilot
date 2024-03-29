@@ -16,4 +16,4 @@ from openpilot.selfdrive.car.volkswagen.values import CAR as VOLKSWAGEN
 Platform = BODY | CHRYSLER | FORD | GM | HONDA | HYUNDAI | MAZDA | MOCK | NISSAN | SUBARU | TESLA | TOYOTA | VOLKSWAGEN
 BRANDS = [BODY, CHRYSLER, FORD, GM, HONDA, HYUNDAI, MAZDA, MOCK, NISSAN, SUBARU, TESLA, TOYOTA, VOLKSWAGEN]
 
-PLATFORMS: dict[str, Platform] = {str(platform): platform for brand in BRANDS for platform in cast(list[Platform], brand)}
+PLATFORMS: dict[str, Platform] = {platform.name: platform for brand in BRANDS for platform in cast(list[Platform], brand)}
