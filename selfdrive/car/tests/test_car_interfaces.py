@@ -57,7 +57,7 @@ class TestCarInterfaces(unittest.TestCase):
 
     args = get_fuzzy_car_interface_args(data.draw)
 
-    car_params = CarInterface.get_params(car_name, args['fingerprints'], args['car_fw'],
+    car_params = CarInterface.get_params(car_name.name, args['fingerprints'], args['car_fw'],
                                          experimental_long=args['experimental_long'], docs=False)
     car_interface = CarInterface(car_params, CarController, CarState)
     assert car_params

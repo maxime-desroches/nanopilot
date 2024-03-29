@@ -184,6 +184,7 @@ def fingerprint(logcan, sendcan, num_pandas):
                  fw_count=len(car_fw), ecu_responses=list(ecu_rx_addrs), vin_rx_addr=vin_rx_addr, vin_rx_bus=vin_rx_bus,
                  fingerprints=repr(finger), fw_query_time=fw_query_time, error=True)
 
+  print('car_fingerprint', car_fingerprint, type(car_fingerprint))
   return car_fingerprint, finger, vin, car_fw, source, exact_match
 
 
@@ -200,7 +201,7 @@ def get_car(logcan, sendcan, experimental_long_allowed, num_pandas=1):
     candidate = "MOCK"
 
   CarInterface, _, _ = interfaces[candidate]
-  CP = CarInterface.get_params(candidate, fingerprints, car_fw, experimental_long_allowed, docs=False)
+  CP = CarInterface.get_params(candidate.name, fingerprints, car_fw, experimental_long_allowed, docs=False)
   CP.carVin = vin
   CP.carFw = car_fw
   CP.fingerprintSource = source

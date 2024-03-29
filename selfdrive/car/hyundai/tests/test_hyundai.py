@@ -210,10 +210,14 @@ class TestHyundaiFingerprint(unittest.TestCase):
 
       CP = car.CarParams.new_message(carFw=car_fw)
       matches = FW_QUERY_CONFIG.match_fw_to_car_fuzzy(build_fw_dict(CP.carFw), FW_VERSIONS)
+      print('matches', matches)
       if len(matches) == 1:
         self.assertEqual(list(matches)[0], platform)
       else:
         platforms_with_shared_codes.add(platform)
+
+    print(platforms_with_shared_codes)
+    print(excluded_platforms)
 
     self.assertEqual(platforms_with_shared_codes, excluded_platforms)
 
