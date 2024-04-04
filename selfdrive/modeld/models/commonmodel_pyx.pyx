@@ -43,16 +43,16 @@ cdef class ModelFrame:
     return np.asarray(<cnp.float32_t[:self.frame.buf_size]> data)
 
 cdef class MonitoringModelFrame(ModelFrame):
-  cdef cppMonitoringModelFrame * frame
+  cdef cppMonitoringModelFrame * dmframe
 
   def __cinit__(self, CLContext context):
-    self.frame = new cppMonitoringModelFrame(context.device_id, context.context)
+    self.dmframe = new cppMonitoringModelFrame(context.device_id, context.context)
 
   def __dealloc__(self):
-    del self.frame
+    del self.dmframe
 
   def prepare(self, VisionBuf buf, float[:] projection):
     cdef mat3 cprojection
     memcpy(cprojection.v, &projection[0], 9*sizeof(float))
-    cdef uint8_t * data = self.frame.prepare(buf.buf.buf_cl, buf.width, buf.height, buf.stride, buf.uv_offset, cprojection)
-    return np.asarray(<cnp.uint8_t[:self.frame.buf_size]> data)
+    cdef unsigned char * data = self.dmframe.prepare(buf.buf.buf_cl, buf.width, buf.height, buf.stride, buf.uv_offset, cprojection)
+    return np.asarray(<cnp.uint8_t[:self.dmframe.MODEL_FRAME_SIZE]> data)

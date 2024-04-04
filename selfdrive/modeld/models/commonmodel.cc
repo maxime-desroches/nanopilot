@@ -82,14 +82,18 @@ MonitoringModelFrame::MonitoringModelFrame(cl_device_id device_id, cl_context co
   transform_init(&transform, context, device_id);
 }
 
-uint8_t* MonitoringModelFrame::prepare(cl_mem yuv_cl, int frame_width, int frame_height, int frame_stride, int frame_uv_offset, const mat3 &projection) {
+unsigned char* MonitoringModelFrame::prepare(cl_mem yuv_cl, int frame_width, int frame_height, int frame_stride, int frame_uv_offset, const mat3 &projection) {
+  printf("hello?");
   transform_queue(&this->transform, q,
                   yuv_cl, frame_width, frame_height, frame_stride, frame_uv_offset,
                   y_cl, u_cl, v_cl, MODEL_WIDTH, MODEL_HEIGHT, projection);
+  printf("hello?");
 
-  CL_CHECK(clEnqueueReadBuffer(q, y_cl, CL_TRUE, 0, MODEL_FRAME_SIZE * sizeof(uint8_t), input_frame, 0, nullptr, nullptr));
+  CL_CHECK(clEnqueueReadBuffer(q, y_cl, CL_TRUE, 0, MODEL_FRAME_SIZE * sizeof(uint8_t), input_frame.get(), 0, nullptr, nullptr));
+  printf("hello?");
   clFinish(q);
-  return input_frame
+  printf("hello?");
+  return input_frame.get();
 }
 
 MonitoringModelFrame::~MonitoringModelFrame() {

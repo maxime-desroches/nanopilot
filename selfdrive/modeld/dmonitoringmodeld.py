@@ -70,14 +70,14 @@ class ModelState:
   def run(self, buf:VisionBuf, calib:np.ndarray) -> tuple[np.ndarray, float]:
     self.inputs['calib'][:] = calib
 
-    transform = np.array(
+    transform = np.array([
       [1.0, 0.0, -244.0],
       [0.0, 1.0, -248.0],
       [0.0, 0.0, 1.0],
-    )
+    ], dtype=np.float32)
 
     t1 = time.perf_counter()
-    self.model.setInputBuffer("input_img", self.frame.prepare(buf, transform.flatten()))
+    self.model.setInputBuffer("input_img", self.frame.prepare(buf, transform.flatten()).view(np.float32))
     self.model.execute()
     t2 = time.perf_counter()
     return self.output, t2 - t1
@@ -117,12 +117,13 @@ def main():
   gc.disable()
   set_realtime_priority(1)
 
-  model = ModelState()
+  cl_context = CLContext()
+  model = ModelState(cl_context)
   cloudlog.warning("models loaded, dmonitoringmodeld starting")
   Params().put_bool("DmModelInitialized", True)
 
   cloudlog.warning("connecting to driver stream")
-  vipc_client = VisionIpcClient("camerad", VisionStreamType.VISION_STREAM_DRIVER, True)
+  vipc_client = VisionIpcClient("camerad", VisionStreamType.VISION_STREAM_DRIVER, True, cl_context)
   while not vipc_client.connect(False):
     time.sleep(0.1)
   assert vipc_client.is_connected()
