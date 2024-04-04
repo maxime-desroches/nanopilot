@@ -60,5 +60,5 @@ private:
   Transform transform;
   cl_command_queue q;
   cl_mem y_cl, u_cl, v_cl;
-  std::unique_ptr<unsigned char> input_frame;
+  std::unique_ptr<unsigned char[]> input_frame;
 };
