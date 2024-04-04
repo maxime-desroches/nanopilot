@@ -71,8 +71,8 @@ class ModelState:
     self.inputs['calib'][:] = calib
 
     transform = np.array([
-      [1.0, 0.0, -244.0],
-      [0.0, 1.0, -248.0],
+      [1.0, 0.0, 244.0],
+      [0.0, 1.0, 248.0],
       [0.0, 0.0, 1.0],
     ], dtype=np.float32)
 
