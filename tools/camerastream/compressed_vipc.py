@@ -92,9 +92,6 @@ def decoder(addr, vipc_server, vst, nvidia, W, H, debug=False):
         y = img_yuv[:uv_offset]
         uv = img_yuv[uv_offset:].reshape(2, -1).ravel('F')
         img_yuv = np.hstack((y, uv))
-        # y.tofile('/home/batman/os10/newy.dat')
-        img_yuv.tofile('/home/batman/os10/newyuv.dat')
-        print(img_yuv.shape)
 
       vipc_server.send(vst, img_yuv.data, cnt, int(time_q[0]*1e9), int(time.monotonic()*1e9))
       cnt += 1
