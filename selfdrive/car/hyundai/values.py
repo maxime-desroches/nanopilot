@@ -657,12 +657,13 @@ FW_QUERY_CONFIG = FwQueryConfig(
     # ),
 
     # CAN & CAN-FD queries (from camera)
-    # Request(
-    #   [HYUNDAI_VERSION_REQUEST_LONG],
-    #   [HYUNDAI_VERSION_RESPONSE],
-    #   bus=0,
-    #   auxiliary=True,
-    # ),
+    Request(
+      [HYUNDAI_VERSION_REQUEST_LONG],
+      [HYUNDAI_VERSION_RESPONSE],
+      whitelist_ecus=[Ecu.fwdCamera, Ecu.fwdRadar],
+      bus=0,
+      auxiliary=True,
+    ),
     Request(
       [HYUNDAI_VERSION_REQUEST_LONG],
       [HYUNDAI_VERSION_RESPONSE],
