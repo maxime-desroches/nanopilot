@@ -651,21 +651,22 @@ FW_QUERY_CONFIG = FwQueryConfig(
   requests=[
     # TODO: add back whitelists
     # CAN queries (OBD-II port)
-    Request(
-      [HYUNDAI_VERSION_REQUEST_LONG],
-      [HYUNDAI_VERSION_RESPONSE],
-    ),
+    # Request(
+    #   [HYUNDAI_VERSION_REQUEST_LONG],
+    #   [HYUNDAI_VERSION_RESPONSE],
+    # ),
 
     # CAN & CAN-FD queries (from camera)
+    # Request(
+    #   [HYUNDAI_VERSION_REQUEST_LONG],
+    #   [HYUNDAI_VERSION_RESPONSE],
+    #   bus=0,
+    #   auxiliary=True,
+    # ),
     Request(
       [HYUNDAI_VERSION_REQUEST_LONG],
       [HYUNDAI_VERSION_RESPONSE],
-      bus=0,
-      auxiliary=True,
-    ),
-    Request(
-      [HYUNDAI_VERSION_REQUEST_LONG],
-      [HYUNDAI_VERSION_RESPONSE],
+      whitelist_ecus=[Ecu.fwdCamera, Ecu.fwdRadar],
       bus=1,
       auxiliary=True,
       obd_multiplexing=False,
@@ -673,30 +674,30 @@ FW_QUERY_CONFIG = FwQueryConfig(
 
     # CAN & CAN FD query to understand the three digit date code
     # HDA2 cars usually use 6 digit date codes, so skip bus 1
-    Request(
-      [HYUNDAI_ECU_MANUFACTURING_DATE],
-      [HYUNDAI_VERSION_RESPONSE],
-      bus=0,
-      auxiliary=True,
-      logging=True,
-    ),
-
-    # CAN-FD alt request logging queries for hvac and parkingAdas
-    Request(
-      [HYUNDAI_VERSION_REQUEST_ALT],
-      [HYUNDAI_VERSION_RESPONSE],
-      bus=0,
-      auxiliary=True,
-      logging=True,
-    ),
-    Request(
-      [HYUNDAI_VERSION_REQUEST_ALT],
-      [HYUNDAI_VERSION_RESPONSE],
-      bus=1,
-      auxiliary=True,
-      logging=True,
-      obd_multiplexing=False,
-    ),
+    # Request(
+    #   [HYUNDAI_ECU_MANUFACTURING_DATE],
+    #   [HYUNDAI_VERSION_RESPONSE],
+    #   bus=0,
+    #   auxiliary=True,
+    #   logging=True,
+    # ),
+    #
+    # # CAN-FD alt request logging queries for hvac and parkingAdas
+    # Request(
+    #   [HYUNDAI_VERSION_REQUEST_ALT],
+    #   [HYUNDAI_VERSION_RESPONSE],
+    #   bus=0,
+    #   auxiliary=True,
+    #   logging=True,
+    # ),
+    # Request(
+    #   [HYUNDAI_VERSION_REQUEST_ALT],
+    #   [HYUNDAI_VERSION_RESPONSE],
+    #   bus=1,
+    #   auxiliary=True,
+    #   logging=True,
+    #   obd_multiplexing=False,
+    # ),
   ],
   # We lose these ECUs without the comma power on these cars.
   # Note that we still attempt to match with them when they are present
