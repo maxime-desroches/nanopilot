@@ -173,7 +173,9 @@ void can_send_thread(std::vector<Panda *> pandas, bool fake_send) {
 
   // run as fast as messages come in
   while (!do_exit && check_all_connected(pandas)) {
+    LOGE("getting msg");
     std::unique_ptr<Message> msg(subscriber->receive());
+    LOGE("got msg");
     if (!msg) {
       if (errno == EINTR) {
         do_exit = true;
@@ -188,14 +190,15 @@ void can_send_thread(std::vector<Panda *> pandas, bool fake_send) {
     LOGE("sendcan: %" PRIu64 ", %" PRIu64, nanos_since_boot(), event.getLogMonoTime());
     if (((nanos_since_boot() - event.getLogMonoTime() < 1e9) && !fake_send) || true) {
       for (const auto& panda : pandas) {
-        LOGT("sending sendcan to panda: %s", (panda->hw_serial()).c_str());
+        LOGE("sending sendcan to panda: %s", (panda->hw_serial()).c_str());
         panda->can_send(event.getSendcan());
-        LOGT("sendcan sent to panda: %s", (panda->hw_serial()).c_str());
+        LOGE("sendcan sent to panda: %s", (panda->hw_serial()).c_str());
       }
     } else {
       LOGE("sendcan too old to send: %" PRIu64 ", %" PRIu64, nanos_since_boot(), event.getLogMonoTime());
     }
   }
+  LOGE("can_send_thread exited!");
 }
 
 void can_recv_thread(std::vector<Panda *> pandas) {
