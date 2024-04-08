@@ -113,7 +113,7 @@ def can_fingerprint(next_can: Callable) -> tuple[str | None, dict[int, dict]]:
 def fingerprint(logcan, sendcan, num_pandas):
   fixed_fingerprint = os.environ.get('FINGERPRINT', "")
   skip_fw_query = os.environ.get('SKIP_FW_QUERY', False)
-  disable_fw_cache = os.environ.get('DISABLE_FW_CACHE', False)
+  disable_fw_cache = True  # os.environ.get('DISABLE_FW_CACHE', False)
   ecu_rx_addrs = set()
   params = Params()
 
