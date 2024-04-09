@@ -244,7 +244,7 @@ int PandaSpiHandle::spi_transfer_retry(uint8_t endpoint, uint8_t *tx_data, uint1
         }
       }
     }
-  } while (ret < 0 && connected && !timed_out && nack_count < 200);
+  } while (ret < 0 && connected && !timed_out);
 
   if (ret < 0) {
     LOGE("transfer failed, after %d tries, %.2fms", timeout_count, millis_since_boot() - start_time);
