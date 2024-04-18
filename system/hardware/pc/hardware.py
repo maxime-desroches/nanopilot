@@ -1,10 +1,10 @@
 import random
 
-from cereal import log
+#from cereal import log
 from openpilot.system.hardware.base import HardwareBase, ThermalConfig
 
-NetworkType = log.DeviceState.NetworkType
-NetworkStrength = log.DeviceState.NetworkStrength
+#NetworkType = log.DeviceState.NetworkType
+#NetworkStrength = log.DeviceState.NetworkStrength
 
 
 class Pc(HardwareBase):
