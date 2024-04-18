@@ -2,6 +2,7 @@
 import hashlib
 import os
 import pathlib
+from typing import Callable
 import psutil
 import requests
 import shutil
@@ -161,12 +162,13 @@ def setup_updater():
   os.makedirs(FINALIZED)
 
 
-def download_update(manifest: dict):
+def download_update(manifest: dict, update: Callable[[dict, int, int], None]):
   cloudlog.info(f"downloading update from: {manifest}")
 
-  HARDWARE.prepare_target_ab_slot()
+  #HARDWARE.prepare_target_ab_slot()
 
-  for entry in manifest:
+  for i, entry in enumerate(manifest):
+    update(entry, i, len(manifest))
     if entry["type"] == "path_tarred":
       extract_directory(entry)
 
