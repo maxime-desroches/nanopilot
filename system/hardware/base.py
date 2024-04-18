@@ -1,10 +1,10 @@
 from abc import abstractmethod, ABC
 from collections import namedtuple
 
-from cereal import log
+#from cereal import log
 
 ThermalConfig = namedtuple('ThermalConfig', ['cpu', 'gpu', 'mem', 'bat', 'pmic'])
-NetworkType = log.DeviceState.NetworkType
+#NetworkType = log.DeviceState.NetworkType
 
 
 class HardwareBase(ABC):
@@ -69,8 +69,8 @@ class HardwareBase(ABC):
   def get_network_strength(self, network_type):
     pass
 
-  def get_network_metered(self, network_type) -> bool:
-    return network_type not in (NetworkType.none, NetworkType.wifi, NetworkType.ethernet)
+  #def get_network_metered(self, network_type) -> bool:
+  #  return network_type not in (NetworkType.none, NetworkType.wifi, NetworkType.ethernet)
 
   @staticmethod
   def set_bandwidth_limit(upload_speed_kbps: int, download_speed_kbps: int) -> None:

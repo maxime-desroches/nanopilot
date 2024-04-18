@@ -2,14 +2,6 @@ Import('env')
 
 import pathlib
 
-required_files = [
-  "cereal/log.capnp",
-  "cereal/include/c++.capnp",
-  "cereal/car.capnp",
-  "cereal/legacy.capnp",
-  "cereal/custom.capnp",
-]
-
 excluded_modules = [
   "Crypto.Cipher",
   "Crypto.PublicKey",
@@ -17,5 +9,7 @@ excluded_modules = [
   "cryptography",
   "zstandard"
 ]
+exclude_args = " ".join(f"--exclude-module={m}" for m in excluded_modules)
 
-installer = env.Command('installer/installer', ["installer.py"], 'pyinstaller installer.py -y --workpath=/tmp/build --distpath=/tmp/dist ')
+installer_py = File('#system/installer/installer.py')
+installer = env.Command('installer/installer', [installer_py], f'pyinstaller {installer_py.abspath} -y --workpath=/data/tmp/build --distpath=/data/tmp/dist {exclude_args}')
