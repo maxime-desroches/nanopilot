@@ -104,4 +104,4 @@ def main(channel):
 
 
 if __name__ == "__main__":
-  main("demo")
+  main("nightly")
