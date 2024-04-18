@@ -2,14 +2,16 @@ Import('env')
 
 import pathlib
 
+required_files = [
+  "openpilot/selfdrive/ui/qt/libpython_helpers.so"
+]
+files_args = " ".join(f"--add-data={s}:{str(pathlib.Path(s).parent)}" for s in required_files)
+
 excluded_modules = [
-  "Crypto.Cipher",
-  "Crypto.PublicKey",
-  "Crypto.Protocol",
   "cryptography",
   "zstandard"
 ]
 exclude_args = " ".join(f"--exclude-module={m}" for m in excluded_modules)
 
 installer_py = File('#system/installer/installer.py')
-installer = env.Command('installer/installer', [installer_py], f'pyinstaller {installer_py.abspath} -y --workpath=/data/tmp/build --distpath=/data/tmp/dist {exclude_args}')
+installer = env.Command('installer/installer', [installer_py], f'pyinstaller {installer_py.abspath} -y --workpath=/data/tmp/build --distpath=/data/tmp/dist {exclude_args} {files_args}')

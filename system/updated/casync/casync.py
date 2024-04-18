@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import io
 import lzma
+import hashlib
 import os
 import pathlib
 import struct
@@ -12,7 +13,6 @@ from collections.abc import Callable
 from typing import IO, Sequence
 
 import requests
-from Crypto.Hash import SHA512
 from openpilot.system.updated.casync import tar
 
 
@@ -176,7 +176,6 @@ def extract(target: list[Chunk],
   mode = 'rb+' if os.path.exists(out_path) else 'wb'
   with open(out_path, mode) as out:
     for cur_chunk in target:
-
       # Find source for desired chunk
       for name, chunk_reader, store_chunks in sources:
         if cur_chunk.sha in store_chunks:
@@ -187,7 +186,7 @@ def extract(target: list[Chunk],
             continue
 
           # Check hash
-          if SHA512.new(bts, truncate="256").digest() != cur_chunk.sha:
+          if hashlib.new("sha512_256", bts).digest() != cur_chunk.sha:
             continue
 
           # Write to output
