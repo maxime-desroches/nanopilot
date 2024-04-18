@@ -9,12 +9,12 @@ import time
 from abc import ABC, abstractmethod
 from collections import defaultdict, namedtuple
 from collections.abc import Callable
-from typing import IO
+from typing import IO, Sequence
 
 import requests
 from Crypto.Hash import SHA512
 from openpilot.system.updated.casync import tar
-from openpilot.system.updated.casync.common import create_casync_tar_package
+
 
 CA_FORMAT_INDEX = 0x96824d9c7b129ff9
 CA_FORMAT_TABLE = 0xe75b9e112f17417d
@@ -69,8 +69,7 @@ class RemoteChunkReader(ChunkReader):
     self.session = requests.Session()
 
   def read(self, chunk: Chunk) -> bytes:
-    sha_hex = chunk.sha.hex()
-    url = os.path.join(self.url, sha_hex[:4], sha_hex + ".cacnk")
+    url = os.path.join(self.url, get_chunk_path(chunk))
 
     if os.path.isfile(url):
       with open(url, 'rb') as f:
@@ -96,7 +95,7 @@ class DirectoryTarChunkReader(BinaryChunkReader):
   """creates a tar archive of a directory and reads chunks from it"""
 
   def __init__(self, path: str, cache_file: str) -> None:
-    create_casync_tar_package(pathlib.Path(path), pathlib.Path(cache_file))
+    tar.create_casync_tar_package(pathlib.Path(path), pathlib.Path(cache_file))
 
     self.f = open(cache_file, "rb")
     return super().__init__(self.f)
@@ -165,8 +164,11 @@ def build_chunk_dict(chunks: list[Chunk]) -> ChunkDict:
   return r
 
 
+ChunkSource = tuple[str, ChunkReader, ChunkDict]
+
+
 def extract(target: list[Chunk],
-            sources: list[tuple[str, ChunkReader, ChunkDict]],
+            sources: Sequence[ChunkSource],
             out_path: str,
             progress: Callable[[int], None] = None):
   stats: dict[str, int] = defaultdict(int)
@@ -201,11 +203,13 @@ def extract(target: list[Chunk],
       else:
         raise RuntimeError("Desired chunk not found in provided stores")
 
+  os.sync()
+
   return stats
 
 
 def extract_directory(target: list[Chunk],
-            sources: list[tuple[str, ChunkReader, ChunkDict]],
+            sources: Sequence[ChunkSource],
             out_path: str,
             tmp_file: str,
             progress: Callable[[int], None] = None):
@@ -235,6 +239,15 @@ def extract_simple(caibx_path, out_path, store_path):
   ]
 
   return extract(target, sources, out_path)
+
+
+def get_default_store(caibx):
+  return os.path.join(os.path.dirname(caibx), "default.castr")
+
+
+def get_chunk_path(chunk: Chunk) -> str:
+  sha_hex = chunk.sha.hex()
+  return str(os.path.join(sha_hex[:4], sha_hex + ".cacnk"))
 
 
 if __name__ == "__main__":

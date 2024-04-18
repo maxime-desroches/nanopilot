@@ -82,3 +82,12 @@ class Pc(HardwareBase):
 
   def get_networks(self):
     return None
+
+  def get_target_ab_slot(self) -> str:
+    raise NotImplementedError("ab not supported on PC")
+
+  def get_current_ab_slot(self) -> str:
+    raise NotImplementedError("ab not supported on PC")
+
+  def prepare_target_ab_slot(self):
+    raise NotImplementedError("ab not supported on PC")
