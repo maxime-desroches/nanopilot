@@ -144,3 +144,18 @@ class HardwareBase(ABC):
 
   def get_modem_data_usage(self):
     return -1, -1
+
+  @abstractmethod
+  def get_target_ab_slot(self) -> str:
+    # get ab slot suffix for target slot
+    pass
+
+  @abstractmethod
+  def get_current_ab_slot(self) -> str:
+    # get ab slot suffix for current slot
+    pass
+
+  @abstractmethod
+  def prepare_target_ab_slot(self):
+    # prepare target ab slot for update
+    pass

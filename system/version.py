@@ -111,6 +111,11 @@ class BuildMetadata:
   def ui_description(self) -> str:
     return f"{self.openpilot.version} / {self.openpilot.git_commit[:6]} / {self.channel}"
 
+  def __eq__(self, other):
+    return self.channel == other.channel and \
+           self.openpilot.git_commit == other.openpilot.git_commit and \
+           self.openpilot.build_style == other.openpilot.build_style
+
 
 def build_metadata_from_dict(build_metadata: dict) -> BuildMetadata:
   channel = build_metadata.get("channel", "unknown")
@@ -132,16 +137,20 @@ def build_metadata_from_dict(build_metadata: dict) -> BuildMetadata:
               is_dirty=False))
 
 
+def is_git_repo(path: str = BASEDIR):
+  git_folder = pathlib.Path(path) / ".git"
+  return git_folder.exists()
+
+
 def get_build_metadata(path: str = BASEDIR) -> BuildMetadata:
   build_metadata_path = pathlib.Path(path) / BUILD_METADATA_FILENAME
 
   if build_metadata_path.exists():
     build_metadata = json.loads(build_metadata_path.read_text())
+    build_metadata["channel"] = Params().get("UpdaterTargetChannel", "unknown")
     return build_metadata_from_dict(build_metadata)
 
-  git_folder = pathlib.Path(path) / ".git"
-
-  if git_folder.exists():
+  if is_git_repo(path):
     return BuildMetadata(get_short_branch(path),
                     OpenpilotMetadata(
                       version=get_version(path),

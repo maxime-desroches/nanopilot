@@ -12,6 +12,7 @@ from cereal import log
 from openpilot.common.gpio import gpio_set, gpio_init, get_irqs_for_action
 from openpilot.system.hardware.base import HardwareBase, ThermalConfig
 from openpilot.system.hardware.tici import iwlist
+from openpilot.system.hardware.tici.agnos import get_target_slot_number, slot_number_to_suffix
 from openpilot.system.hardware.tici.pins import GPIO
 from openpilot.system.hardware.tici.amplifier import Amplifier
 
@@ -577,6 +578,20 @@ class Tici(HardwareBase):
     if "Core state: 0" in encoder_state and (time.monotonic() < 60*2):
       return False
     return True
+
+  def get_target_ab_slot(self) -> str:
+    target_slot_number = get_target_slot_number()
+    return slot_number_to_suffix(target_slot_number)
+
+  def get_current_ab_slot(self) -> str:
+    target_slot_number = get_target_slot_number()
+    current_slot_number = 1 if target_slot_number == 1 else 0
+    return slot_number_to_suffix(current_slot_number)
+
+  def prepare_target_ab_slot(self):
+    target_slot_number = get_target_slot_number()
+    os.system(f"abctl --set_unbootable {target_slot_number}")
+
 
 if __name__ == "__main__":
   t = Tici()

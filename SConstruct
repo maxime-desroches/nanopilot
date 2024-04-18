@@ -381,6 +381,8 @@ if arch != "Darwin":
     'system/logcatd/SConscript',
   ])
 
+SConscript(['system/installer/SConscript'])
+
 # Build openpilot
 SConscript(['third_party/SConscript'])
 
