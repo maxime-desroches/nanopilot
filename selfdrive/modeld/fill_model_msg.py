@@ -106,10 +106,10 @@ def fill_model_msg(msg: capnp._DynamicStructBuilder, net_output_data: dict[str, 
   modelV2.roadEdgeStds = net_output_data['road_edges_stds'][0,:,0,0].tolist()
 
   # leads
-  modelV2.init('leadsV3', 3)
+  modelV2.init('leads', 3)
   for i in range(3):
-    lead = modelV2.leadsV3[i]
-    fill_xyvat(lead, ModelConstants.LEAD_T_IDXS, *net_output_data['lead'][0,i].T, *net_output_data['lead_stds'][0,i].T)
+    lead = modelV2.leads[i]
+    fill_xyvat(lead, 0., ModelConstants.LEAD_T_IDXS, *net_output_data['lead'][0,i], *net_output_data['lead_stds'][0,i])
     lead.prob = net_output_data['lead_prob'][0,i].tolist()
     lead.probTime = ModelConstants.LEAD_T_OFFSETS[i]
 
