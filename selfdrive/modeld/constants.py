@@ -43,7 +43,6 @@ class ModelConstants:
   NUM_LANE_LINES = 4
   NUM_ROAD_EDGES = 2
 
-  LEAD_TRAJ_LEN = 6
   DESIRE_PRED_LEN = 4
 
   PLAN_MHP_N = 5
