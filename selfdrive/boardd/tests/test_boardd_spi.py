@@ -3,6 +3,7 @@ import os
 import time
 import numpy as np
 import pytest
+import random
 
 import cereal.messaging as messaging
 from cereal.services import SERVICE_LIST
@@ -32,8 +33,6 @@ class TestBoarddSpi:
     for s in socks.values():
       messaging.drain_sock_raw(s)
 
-
-
     total_recv_count = 0
     total_sent_count = 0
     sent_msgs = {bus: list() for bus in range(3)}
@@ -41,6 +40,12 @@ class TestBoarddSpi:
     st = time.monotonic()
     ts = {s: list() for s in socks.keys()}
     for _ in range(20):
+      # send some CAN messages
+      sent = send_random_can_messages(sendcan, random.randrange(2, 10))
+      for k, v in sent.items():
+        sent_msgs[k].extend(list(v))
+        total_sent_count += len(v)
+
       for service, sock in socks.items():
         for m in messaging.drain_sock(sock):
           ts[service].append(m.logMonoTime)
