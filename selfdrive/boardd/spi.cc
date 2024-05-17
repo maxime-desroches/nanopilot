@@ -38,6 +38,8 @@ struct __attribute__((packed)) spi_header {
 const unsigned int SPI_ACK_TIMEOUT = 500; // milliseconds
 const std::string SPI_DEVICE = "/dev/spidev0.0";
 
+bool corrupt_allowed = false;
+
 class LockEx {
 public:
   LockEx(int fd, std::recursive_mutex &m) : fd(fd), m(m) {
@@ -158,8 +160,12 @@ int PandaSpiHandle::control_read(uint8_t request, uint16_t param1, uint16_t para
 int PandaSpiHandle::bulk_write(unsigned char endpoint, unsigned char* data, int length, unsigned int timeout) {
   return bulk_transfer(endpoint, data, length, NULL, 0, timeout);
 }
+
 int PandaSpiHandle::bulk_read(unsigned char endpoint, unsigned char* data, int length, unsigned int timeout) {
-  return bulk_transfer(endpoint, NULL, 0, data, length, timeout);
+  corrupt_allowed = true;
+  auto a = bulk_transfer(endpoint, NULL, 0, data, length, timeout);
+  //corrupt_allowed = false;
+  return a;
 }
 
 int PandaSpiHandle::bulk_transfer(uint8_t endpoint, uint8_t *tx_data, uint16_t tx_len, uint8_t *rx_data, uint16_t rx_len, unsigned int timeout) {
@@ -294,7 +300,7 @@ int PandaSpiHandle::wait_for_ack(uint8_t ack, uint8_t tx, unsigned int timeout, 
 int PandaSpiHandle::lltransfer(spi_ioc_transfer &t) {
   static const double err_prob = std::stod(util::getenv("SPI_ERR_PROB", "-1"));
 
-  if (err_prob > 0) {
+  if (err_prob > 0 && corrupt_allowed) {
     if ((static_cast<double>(rand()) / RAND_MAX) < err_prob) {
       printf("transfer len error\n");
       t.len = rand() % SPI_BUF_SIZE;
@@ -311,7 +317,7 @@ int PandaSpiHandle::lltransfer(spi_ioc_transfer &t) {
 
   int ret = util::safe_ioctl(spi_fd, SPI_IOC_MESSAGE(1), &t);
 
-  if (err_prob > 0) {
+  if (err_prob > 0 && corrupt_allowed) {
     if ((static_cast<double>(rand()) / RAND_MAX) < err_prob && t.rx_buf != (uint64_t)NULL) {
       printf("corrupting RX\n");
       for (int i = 0; i < t.len; i++) {
