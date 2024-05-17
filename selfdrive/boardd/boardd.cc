@@ -578,6 +578,18 @@ void boardd_main_thread(std::vector<std::string> serials) {
     ++i;
   }
 
+  /*
+  while (!do_exit) {
+    int count = 0;
+    double st = millis_since_boot();
+    while (millis_since_boot() - st < 1000) {
+      pandas[0]->get_state();
+      count++;
+    }
+    printf("health: %dHz\n", count);
+  }
+  */
+
   if (!do_exit) {
     LOGW("connected to all pandas");
 
