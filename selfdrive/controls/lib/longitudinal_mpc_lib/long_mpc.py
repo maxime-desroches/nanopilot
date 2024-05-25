@@ -4,6 +4,7 @@ import time
 import numpy as np
 from cereal import log
 from openpilot.common.numpy_fast import clip
+from openpilot.common.realtime import DT_MDL
 from openpilot.common.swaglog import cloudlog
 # WARNING: imports outside of constants will not trigger a rebuild
 from openpilot.selfdrive.modeld.constants import index_function
@@ -440,7 +441,7 @@ class LongitudinalMpc:
     self.a_solution = self.x_sol[:,2]
     self.j_solution = self.u_sol[:,0]
 
-    self.prev_a = np.interp(T_IDXS + 0.05, T_IDXS, self.a_solution)
+    self.prev_a = np.interp(T_IDXS + DT_MDL, T_IDXS, self.a_solution)
 
     t = time.monotonic()
     if self.solution_status != 0:
