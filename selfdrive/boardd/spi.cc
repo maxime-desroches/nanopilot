@@ -258,7 +258,7 @@ int PandaSpiHandle::wait_for_ack(uint8_t ack, uint8_t tx, unsigned int timeout, 
   if (timeout == 0) {
     timeout = SPI_ACK_TIMEOUT;
   }
-  timeout = std::clamp(timeout, 100U, SPI_ACK_TIMEOUT);
+  timeout = std::clamp(timeout, 25U, SPI_ACK_TIMEOUT);
 
   spi_ioc_transfer transfer = {
     .tx_buf = (uint64_t)tx_buf,
