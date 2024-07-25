@@ -67,7 +67,7 @@ AddOption('--pc-thneed',
 AddOption('--minimal',
           action='store_false',
           dest='extras',
-          default=os.path.islink(Dir('#rednose/').abspath), # minimal by default on release branch (where rednose is not a link)
+          default=os.path.exists(File('#.lfsconfig').abspath), # minimal by default on release branch (where there's no LFS)
           help='the minimum build to run openpilot. no tests, tools, etc.')
 
 ## Architecture name breakdown (arch)
@@ -102,7 +102,6 @@ if arch == "larch64":
 
   libpath = [
     "/usr/local/lib",
-    "/usr/lib",
     "/system/vendor/lib64",
     f"#third_party/acados/{arch}/lib",
   ]
@@ -170,7 +169,6 @@ if arch != "Darwin":
   ldflags += ["-Wl,--as-needed", "-Wl,--no-undefined"]
 
 # Enable swaglog include in submodules
-cflags += ['-DSWAGLOG="\\"common/swaglog.h\\""']
 cxxflags += ['-DSWAGLOG="\\"common/swaglog.h\\""']
 
 ccflags_option = GetOption('ccflags')
@@ -193,6 +191,7 @@ env = Environment(
     "-Wno-c99-designator",
     "-Wno-reorder-init-list",
     "-Wno-error=unused-but-set-variable",
+    "-Wno-vla-cxx-extension",
   ] + cflags + ccflags,
 
   CPPPATH=cpppath + [
@@ -205,12 +204,10 @@ env = Environment(
     "#third_party/json11",
     "#third_party/linux/include",
     "#third_party/snpe/include",
-    "#third_party/qrcode",
     "#third_party",
     "#cereal",
+    "#msgq",
     "#opendbc/can",
-    "#third_party/maplibre-native-qt/include",
-    f"#third_party/maplibre-native-qt/{arch}/include"
   ],
 
   CC='clang',
@@ -222,10 +219,9 @@ env = Environment(
   CFLAGS=["-std=gnu11"] + cflags,
   CXXFLAGS=["-std=c++1z"] + cxxflags,
   LIBPATH=libpath + [
-    "#cereal",
+    "#msgq_repo",
     "#third_party",
-    "#opendbc/can",
-    "#selfdrive/boardd",
+    "#selfdrive/pandad",
     "#common",
     "#rednose/helpers",
   ],
@@ -276,7 +272,7 @@ Export('envCython')
 
 # Qt build environment
 qt_env = env.Clone()
-qt_modules = ["Widgets", "Gui", "Core", "Network", "Concurrent", "Multimedia", "Quick", "Qml", "QuickWidgets", "Location", "Positioning", "DBus", "Xml"]
+qt_modules = ["Widgets", "Gui", "Core", "Network", "Concurrent", "Multimedia", "Quick", "Qml", "QuickWidgets", "DBus", "Xml"]
 
 qt_libs = []
 if arch == "Darwin":
@@ -316,7 +312,7 @@ try:
 except SCons.Errors.UserError:
   qt_env.Tool('qt')
 
-qt_env['CPPPATH'] += qt_dirs# + ["#selfdrive/ui/qt/"]
+qt_env['CPPPATH'] += qt_dirs + ["#third_party/qrcode"]
 qt_flags = [
   "-D_REENTRANT",
   "-DQT_NO_DEBUG",
@@ -329,8 +325,7 @@ qt_flags = [
   "-DQT_MESSAGELOGCONTEXT",
 ]
 qt_env['CXXFLAGS'] += qt_flags
-qt_env['LIBPATH'] += ['#selfdrive/ui', f"#third_party/maplibre-native-qt/{arch}/lib"]
-qt_env['RPATH'] += [Dir(f"#third_party/maplibre-native-qt/{arch}/lib").srcnode().abspath]
+qt_env['LIBPATH'] += ['#selfdrive/ui', ]
 qt_env['LIBS'] = qt_libs
 
 if GetOption("clazy"):
@@ -355,8 +350,13 @@ gpucommon = [_gpucommon]
 
 Export('common', 'gpucommon')
 
-# Build cereal and messaging
+# Build messaging (cereal + msgq + socketmaster + their dependencies)
+SConscript(['msgq_repo/SConscript'])
 SConscript(['cereal/SConscript'])
+Import('socketmaster', 'msgq')
+messaging = [socketmaster, msgq, 'zmq', 'capnp', 'kj',]
+Export('messaging')
+
 
 # Build other submodules
 SConscript([
@@ -376,10 +376,12 @@ SConscript([
 ])
 if arch != "Darwin":
   SConscript([
-    'system/camerad/SConscript',
     'system/sensord/SConscript',
     'system/logcatd/SConscript',
   ])
+
+if arch == "larch64":
+  SConscript(['system/camerad/SConscript'])
 
 # Build openpilot
 SConscript(['third_party/SConscript'])

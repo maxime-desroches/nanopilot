@@ -2,8 +2,8 @@ from collections import namedtuple
 
 from cereal import car
 from openpilot.common.numpy_fast import clip, interp
-from openpilot.common.realtime import DT_CTRL
 from opendbc.can.packer import CANPacker
+from openpilot.selfdrive.car import DT_CTRL
 from openpilot.selfdrive.car.honda import hondacan
 from openpilot.selfdrive.car.honda.values import CruiseButtons, VISUAL_HUD, HONDA_BOSCH, HONDA_BOSCH_RADARLESS, HONDA_NIDEC_ALT_PCM_ACCEL, CarControllerParams
 from openpilot.selfdrive.car.interfaces import CarControllerBase
@@ -244,7 +244,7 @@ class CarController(CarControllerBase):
         self.speed = pcm_speed
         self.gas = pcm_accel / self.params.NIDEC_GAS_MAX
 
-    new_actuators = actuators.copy()
+    new_actuators = actuators.as_builder()
     new_actuators.speed = self.speed
     new_actuators.accel = self.accel
     new_actuators.gas = self.gas
