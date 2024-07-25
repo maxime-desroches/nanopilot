@@ -14,6 +14,7 @@ from openpilot.common.swaglog import cloudlog
 from openpilot.common.params import Params
 from openpilot.common.realtime import set_realtime_priority
 from openpilot.common.transformations.camera import _ar_ox_fisheye, _os_fisheye
+from openpilot.common.transformations.model import dmonitoringmodel_intrinsics
 from openpilot.selfdrive.modeld.runners import ModelRunner, Runtime
 from openpilot.selfdrive.modeld.models.commonmodel_pyx import sigmoid, CLContext, MonitoringModelFrame
 
@@ -24,12 +25,6 @@ SEND_RAW_PRED = os.getenv('SEND_RAW_PRED')
 MODEL_PATHS = {
   ModelRunner.SNPE: Path(__file__).parent / 'models/dmonitoring_model_q.dlc',
   ModelRunner.ONNX: Path(__file__).parent / 'models/dmonitoring_model.onnx'}
-
-INPUT_INTRINICS = np.array([
-    [567.0,  0.0, 1440.0/2],
-    [0.0, 567.0, 960.0/2 - (1208.0 - 960.0)/2],
-    [0.0,  0.0, 1.0]
-])
 
 class DriverStateResult(ctypes.Structure):
   _fields_ = [
@@ -145,7 +140,7 @@ def main():
 
     if not transform_set:
       from_intr = _os_fisheye.intrinsics if buf.width > 2000 else _ar_ox_fisheye.intrinsics
-      model_transform = np.linalg.inv(np.dot(INPUT_INTRINICS, np.linalg.inv(from_intr))).astype(np.float32)
+      model_transform = np.linalg.inv(np.dot(dmonitoringmodel_intrinsics, np.linalg.inv(from_intr))).astype(np.float32)
       transform_set = True
 
     sm.update(0)
