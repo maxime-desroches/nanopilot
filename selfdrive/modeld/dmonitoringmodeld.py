@@ -77,8 +77,8 @@ class ModelState:
   def run(self, buf:VisionBuf, calib:np.ndarray, transform:np.ndarray) -> tuple[np.ndarray, float]:
     self.inputs['calib'][:] = calib
 
-    t1 = time.perf_counter()
     self.model.setInputBuffer("input_img", self.frame.prepare(buf, transform.flatten()).view(np.float32))
+    t1 = time.perf_counter()
     self.model.execute()
     t2 = time.perf_counter()
     return self.output, t2 - t1
