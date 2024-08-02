@@ -201,7 +201,8 @@ function op_activate_venv() {
 
 function op_venv() {
   op_before_cmd
-  bash --rcfile <(echo "source $RC_FILE; source $OPENPILOT_ROOT/.venv/bin/activate")
+  deactivate || true
+  exec bash --rcfile <(echo "source $RC_FILE; source $OPENPILOT_ROOT/.venv/bin/activate")
 }
 
 function op_check() {
