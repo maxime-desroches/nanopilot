@@ -41,7 +41,7 @@ def only_onroad(started: bool, params, CP: car.CarParams) -> bool:
 def only_offroad(started, params, CP: car.CarParams) -> bool:
   return not started
 
-def PythonProcess(self, name, module, should_run, enabled=True, sigkill=False, watchdog_max_dt=None):
+def PythonProcess(name, module, should_run, enabled=True, sigkill=False, watchdog_max_dt=None):
   cwd = module.split('.')[:-1].join('/')
   cmdline = "./" + module.split('.')[-1] + ".py"
   return NativeProcess(name, cwd, cmdline, should_run, enabled=enabled, sigkill=sigkill, watchdog_max_dt=watchdog_max_dt)
